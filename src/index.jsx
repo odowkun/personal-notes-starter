@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import NotesApp from './components/NotesApp';
-
-// import style
 import './styles/style.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

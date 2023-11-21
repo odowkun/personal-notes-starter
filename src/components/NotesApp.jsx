@@ -1,9 +1,9 @@
 import React from "react";
 import { getInitialData } from "../utils";
-import ActiveNotes from "./ActiveNotes";
 import AddNotes from "./AddNotes";
+import ActiveNotes from "./ActiveNotes";
+import HeaderNav from "./HeaderNav";
 import ArchiveNotes from "./ArchiveNotes";
-import Header from "./Header";
 
 class NotesApp extends React.Component {
   constructor(props) {
@@ -14,14 +14,27 @@ class NotesApp extends React.Component {
       searchNotes: getInitialData(),
     };
 
-    this.onDeleteHandler = this.onDeleteHandler.bind(this);
-    this.onChangeArchiveHandler = this.onChangeArchiveHandler.bind(this);
-    this.onSearchHandler = this.onSearchHandler.bind(this);
-    this.onAddNoteHandler = this.onAddNoteHandler.bind(this);
+    this.onDelete = this.onDelete.bind(this);
+    this.onChangeArchive = this.onChangeArchive.bind(this);
+    this.onSearch = this.onSearch.bind(this);
+    this.onAddNote = this.onAddNote.bind(this);
     this.addToLocalStorage = this.addToLocalStorage.bind(this);
   }
 
-  onDeleteHandler(id) {
+  onChangeArchive(id) {
+    this.setState((prevState) => {
+      return {
+        notes: prevState.notes.map((note) =>
+          note.id == id ? { ...note, archived: !note.archived } : note
+        ),
+        searchNotes: prevState.searchNotes.map((note) =>
+          note.id == id ? { ...note, archived: !note.archived } : note
+        ),
+      };
+    });
+  }
+
+  onDelete(id) {
     const notes = this.state.notes.filter((note) => note.id !== id);
     const searchNotes = this.state.searchNotes.filter((note) => note.id !== id);
     this.setState({
@@ -30,22 +43,7 @@ class NotesApp extends React.Component {
     });
   }
 
-  onChangeArchiveHandler(id) {
-    this.setState((prevState) => {
-      // console.log(prevState.notes);
-      // console.log(...prevState.notes);
-      return {
-        notes: prevState.notes.map((note) =>
-          note.id === id ? { ...note, archived: !note.archived } : note
-        ),
-        searchNotes: prevState.searchNotes.map((note) =>
-          note.id === id ? { ...note, archived: !note.archived } : note
-        ),
-      };
-    });
-  }
-
-  onSearchHandler(e) {
+  onSearch(e) {
     this.setState((prevState) => {
       return {
         searchNotes: prevState.notes.filter((note) =>
@@ -55,12 +53,14 @@ class NotesApp extends React.Component {
     });
   }
 
-  onAddNoteHandler({ title, body }) {
+  addToLocalStorage({ title, body }) {
+    this.onAddNote({ title, body });
+  }
+
+  onAddNote({ title, body }) {
     this.setState((prevState) => {
       return {
         notes: [
-          // Spread Operator
-
           ...prevState.notes,
           {
             id: +new Date(),
@@ -84,26 +84,22 @@ class NotesApp extends React.Component {
     });
   }
 
-  addToLocalStorage({ title, body }) {
-    this.onAddNoteHandler({ title, body });
-  }
-
   render() {
     return (
       <>
-        <Header onSearch={this.onSearchHandler} />
+        <HeaderNav onSearch={this.onSearch} />
         {localStorage.setItem("NOTES_APP", JSON.stringify(this.state.notes))}
         <div className="note-app__body">
           <AddNotes addNote={this.addToLocalStorage} />
           <ActiveNotes
             notes={this.state.searchNotes}
-            onDelete={this.onDeleteHandler}
-            onChangeArchive={this.onChangeArchiveHandler}
+            onDelete={this.onDelete}
+            onChangeArchive={this.onChangeArchive}
           />
           <ArchiveNotes
             notes={this.state.searchNotes}
-            onDelete={this.onDeleteHandler}
-            onChangeArchive={this.onChangeArchiveHandler}
+            onDelete={this.onDelete}
+            onChangeArchive={this.onChangeArchive}
           />
         </div>
       </>

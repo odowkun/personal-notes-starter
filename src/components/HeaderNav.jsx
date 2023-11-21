@@ -1,6 +1,6 @@
 import React from "react";
 
-const Header = ({ onSearch }) => {
+const HeaderNav = ({ onSearch }) => {
   return (
     <div className="note-app__header">
       <h1>Notes</h1>
@@ -11,4 +11,4 @@ const Header = ({ onSearch }) => {
   );
 };
 
-export default Header;
+export default HeaderNav;
